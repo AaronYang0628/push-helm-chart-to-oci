@@ -1,0 +1,84 @@
+name: 'push-chart-to-oci'
+description: 'Github Action to simplify pushing a Helm Chart into a Registry'
+branding:
+  icon: package
+  color: yellow
+inputs:
+  working-dir:
+    description: 'Working directory'
+    default: '.'
+    required: false
+  oci-repository:
+    description: 'URL of your repository'
+    required: true
+  username:
+    description: 'Username to use on your repository'
+    required: true
+  password:
+    description: 'Password to use on your repository'
+    required: true
+  build-dependencies:
+    description: 'Build dependencies before push'
+    default: 'false'
+  update-dependencies:
+    description: 'Update dependencies before push'
+    default: 'false'
+  before-hook:
+    description: 'Command to execute before publishing'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Helm
+      shell: bash
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Execute Before Hook
+      shell: bash
+      if: ${{ inputs.before-hook != '' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: ${{ inputs.before-hook }}
+
+    - name: Update dependencies
+      shell: bash
+      if: ${{ inputs.update-dependencies == 'true' }}
+      working-directory: ${{ inputs.working-dir }}
+      env:
+        HELM_REPO_USERNAME: ${{ inputs.username }}
+        HELM_REPO_PASSWORD: ${{ inputs.password }}
+      run: |
+        helm dependencies update
+
+    - name: Build dependencies
+      shell: bash
+      if: ${{ inputs.build-dependencies == 'true' }}
+      working-directory: ${{ inputs.working-dir }}
+      env:
+        HELM_REPO_USERNAME: ${{ inputs.username }}
+        HELM_REPO_PASSWORD: ${{ inputs.password }}
+      run: |
+        helm dependencies build
+
+    - name: Lint Code
+      shell: bash
+      working-directory: ${{ inputs.working-dir }}
+      run: |
+        helm lint
+
+    - name: Package Chart
+      shell: bash
+      working-directory: ${{ inputs.working-dir }}
+      run: |
+        helm package .
+
+    - name: Publish Chart
+      shell: bash
+      working-directory: ${{ inputs.working-dir }}
+      env:
+        HELM_REPO_USERNAME: ${{ inputs.username }}
+        HELM_REPO_PASSWORD: ${{ inputs.password }}
+      run: |
+        helm push . /*.tgz ${{ inputs.oci-repository }}
