@@ -81,4 +81,4 @@ runs:
         HELM_REPO_USERNAME: ${{ inputs.username }}
         HELM_REPO_PASSWORD: ${{ inputs.password }}
       run: |
-        helm push . /*.tgz ${{ inputs.oci-repository }}
+        helm push ./*.tgz ${{ inputs.oci-repository }}

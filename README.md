@@ -1,6 +1,6 @@
 # HELM PUBLISH ACTION
 
-[![Version](https://img.shields.io/github/v/release/huggingface/helm-publish-action?label=Release)](https://github.com/huggingface/helm-publish-action/releases)
+[![Version](https://github.com/AaronYang0628/push-helm-chart-to-oci/?label=Release)](https://github.com/AaronYang0628/push-helm-chart-to-oci/releases)
 [![License](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Github Action to simplify Helm Chart publish into a registry.
@@ -11,13 +11,12 @@ See [action.yml](action.yml)
 
 ```yaml
 - name: Helm Publish Action
-  uses: aaronyang0628/push-chart-to-oci@latest
+  uses: AaronYang0628/push-helm-chart-to-oci@v0.0.1
   with:
-    workingDirectory: charts
-    repository: https://registry.your-domain.com
-    username: ${{ secrets.REGISTRY_USERNAME }}
-    password: ${{ secrets.REGISTRY_PASSWORD }}
-    beforeHook: cd subcharts/my-sub-chart && helm dependencies update
+    working-dir: ${{ matrix.chart_path }}
+    oci-repository: oci://${{ env.REGISTRY }}/${{ env.REPOSITORY_NAMESPACE }}
+    username: ${{ env.USER }}
+    password: ${{ secrets.ZJ_HARBOR_TOKEN }}
 ```
 
 
