@@ -11,7 +11,7 @@ See [action.yml](action.yml)
 
 ```yaml
 - name: Helm Publish Action
-  uses: AaronYang0628/push-helm-chart-to-oci@v0.0.1
+  uses: AaronYang0628/push-helm-chart-to-oci@latest
   with:
     working-dir: ${{ matrix.chart_path }}
     oci-repository: oci://${{ env.REGISTRY }}/${{ env.REPOSITORY_NAMESPACE }}

@@ -74,6 +74,18 @@ runs:
       run: |
         helm package .
 
+    - name: Login Registry
+      shell: bash
+      working-directory: ${{ inputs.working-dir }}
+      env:
+        HELM_REPO_USERNAME: ${{ inputs.username }}
+        HELM_REPO_PASSWORD: ${{ inputs.password }}
+      run: |
+        echo $HELM_REPO_PASSWORD | helm registry login \
+            ${{ inputs.oci-repository }} \
+            --username $HELM_REPO_USERNAME \
+            --password-stdin
+
     - name: Publish Chart
       shell: bash
       working-directory: ${{ inputs.working-dir }}
